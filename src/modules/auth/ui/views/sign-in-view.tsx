@@ -14,7 +14,7 @@ import {Button} from "@/components/ui/button"
 import {Card, CardContent} from "@/components/ui/card"  
 import {Alert, AlertTitle} from "@/components/ui/alert"
 import {Form , FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form"
-import { useRouter } from "next/navigation"
+
 
 
 const formSchema = z.object({
@@ -24,7 +24,7 @@ const formSchema = z.object({
 
 export const SignInView = () => {
    
-  const router=useRouter();
+
   const [error,setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false); 
   const onSubmit = (data:z.infer<typeof formSchema>) => {
@@ -33,12 +33,12 @@ export const SignInView = () => {
      authClient.signIn.email(
       {
         email: data.email,
-        password: data.password
+        password: data.password,
+        callbackURL:"/"
       },
      {
       onSuccess:() => {
         setPending(false);
-        router.push("/");
       },
       onError:({error}) =>{
         setPending(false);
@@ -47,7 +47,26 @@ export const SignInView = () => {
      }
      )
   }
-
+  const onSocial = (provider: "github" | "google") => {
+    setError(null);
+    setPending(true);
+     authClient.signIn.social(
+      {
+       provider:provider,
+       callbackURL:"/"
+      },
+     {
+      onSuccess:() => {
+        setPending(false);
+        setPending(true);
+      },
+      onError:({error}) =>{
+        setPending(false);
+        setError(error.message);
+      }
+     }
+     )
+  }
    const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues:{
@@ -133,11 +152,13 @@ export const SignInView = () => {
       variant="outline"
       type="button"
       className="w-full"
+      onClick={()=>onSocial("google")}
       >
      Google
       </Button>
       <Button 
       disabled={pending}
+      onClick={()=>onSocial("github")}
       variant="outline"
       type="button"
       className="w-full"

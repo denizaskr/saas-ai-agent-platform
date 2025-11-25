@@ -10,6 +10,7 @@ const Home = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const onSubmit = () => {
     authClient.signUp.email({
       email,
@@ -42,12 +43,14 @@ const Home = () => {
   )
   }
   if(session){
+   return(
     <div className='flex flex-col p-4 gap-y-4'>
-      <p>Logged in as {session.user.name}</p>
-      <Button onClick={() => authClient.signOut()}> 
-        Sign Out
-      </Button>
-    </div>
+    <p>Logged in as {session.user.name}</p>
+    <Button onClick={() => authClient.signOut()}> 
+      Sign Out
+    </Button>
+  </div>
+   )
   }
   return (
  <div className='flex flex-col gap-y-10'>
