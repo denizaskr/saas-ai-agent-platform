@@ -5,7 +5,7 @@ import {zodResolver} from "@hookform/resolvers/zod"
 import { OctagonAlertIcon } from "lucide-react"
 import { useForm } from "react-hook-form"
 import Link from "next/link"
-
+import {FaGithub, FaGoogle} from "react-icons/fa"
 
 import { Input } from "@/components/ui/input"
 import { authClient } from "@/lib/auth-client"
@@ -14,6 +14,7 @@ import {Button} from "@/components/ui/button"
 import {Card, CardContent} from "@/components/ui/card"  
 import {Alert, AlertTitle} from "@/components/ui/alert"
 import {Form , FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form"
+import { useRouter } from "next/navigation"
 
 
 const formSchema = z.object({
@@ -28,7 +29,7 @@ const formSchema = z.object({
 } )
 
 export const SignUpView = () => {
-   
+  const router = useRouter();
   const [error,setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false); 
   const onSubmit = (data:z.infer<typeof formSchema>) => {
@@ -44,6 +45,7 @@ export const SignUpView = () => {
      {
       onSuccess:() => {
         setPending(false);
+        router.push("/");
       },
       onError:({error}) =>{
         setPending(false);
@@ -63,6 +65,7 @@ export const SignUpView = () => {
      {
       onSuccess:() => {
         setPending(false);
+        
 
       },
       onError:({error}) =>{
@@ -201,7 +204,7 @@ export const SignUpView = () => {
       className="w-full"
       onClick={()=>onSocial("google")}
       >
-     Google
+     <FaGoogle/>
       </Button>
       <Button 
       disabled={pending}
@@ -210,14 +213,14 @@ export const SignUpView = () => {
       className="w-full"
       onClick={()=>onSocial("github")}
       >
-     Github
+     <FaGithub/>
       </Button>
       </div>
       <div className="text-center text-sm">
         Already have an account?{" "}
         
         <Link href="/sign-in" className="underline underline-offset-4">
-        Sign In
+        Sign Up
         </Link>
       </div>
       </div>
