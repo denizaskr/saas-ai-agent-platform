@@ -1,7 +1,6 @@
 import { AgentGetOne } from "@/modules/agents/types";
 import { useTRPC } from "@/trpc/client";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { useMutation, useQueryClient } from "@tanstack/react-query"; 
 import {z} from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,6 +19,7 @@ import {
   import { Button } from "../../../../components/ui/button";
   import { Textarea } from "../../../../components/ui/textarea";
   import { GeneratedAvatar } from "../../../../components/generated-avatar";
+import { toast } from "sonner";
 
 interface AgentFormProps {
     onSuccess?: () => void;
@@ -33,13 +33,24 @@ export const AgentForm=({
     initialValues,
 }:AgentFormProps) =>{
     const trpc = useTRPC();
-    const router =useRouter();
     const queryClient=useQueryClient()
     
     const createAgent= useMutation(
         trpc.agents.create.mutationOptions({
-            onSuccess: () =>{},
-            onError: () => {}
+            onSuccess: async () =>{
+                await queryClient.invalidateQueries(
+                  trpc.agents.getMany.queryOptions()
+                );
+                if(initialValues?.id){
+                   await queryClient.invalidateQueries(
+                        trpc.agents.getOne.queryOptions({id:initialValues.id})
+                    )
+                }
+                onSuccess?.();
+            },
+            onError: (error) => {
+                toast.error(error.message);
+            }
         })
 
     )
